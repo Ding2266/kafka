@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -17,6 +19,9 @@ public class KafkaMessageConsumer {
 	public static final String TOPIC_NAME = "mldn-topic" ;
 	// 定义你所有参与到集群之中的主机列表
 	public static final String SERVERS = "kafka-single:9095" ;
+	static {
+		System.setProperty("java.security.auth.login.config","D:/Users/kafka_client_jaas.conf");	// 表示系统环境属性
+	}
 	public static void main(String[] args) throws Exception {
 		Properties props = new Properties() ;
 		// 定义消息消费者的连接服务器地址
@@ -25,6 +30,8 @@ public class KafkaMessageConsumer {
 		props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName()) ;
 		props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName()) ;
 		props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-1") ;
+		props.setProperty(SaslConfigs.SASL_MECHANISM, "PLAIN");
+		props.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
 		// 定义消费者处理对象
 		Consumer<String,Integer> consumer = new KafkaConsumer<String,Integer>(props) ;
 		// 消费者可以消费多个主题，所以这个时候需要指派主题的名称
